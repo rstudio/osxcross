@@ -13,6 +13,7 @@ unset LIBRARY_PATH
 
 DESC=gcc
 USESYSTEMCOMPILER=1
+ARCH=arm64
 source tools/tools.sh
 
 # GCC version to build
@@ -118,8 +119,8 @@ fi
 EXTRACONFFLAGS=""
 
 if [ "$PLATFORM" != "Darwin" ]; then
-  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/x86_64-apple-$TARGET-ld "
-  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/x86_64-apple-$TARGET-as "
+  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/$ARCH-apple-$TARGET-ld "
+  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/$ARCH-apple-$TARGET-as "
 fi
 
 LANGS="c,c++,objc,obj-c++"
@@ -135,7 +136,7 @@ else
 fi
 
 ../configure \
-  --target=x86_64-apple-$TARGET \
+  --target=$ARCH-apple-$TARGET \
   --with-sysroot=$SDK \
   --disable-nls \
   --enable-languages=$LANGS \
@@ -152,7 +153,7 @@ $MAKE install
 
 GCC_VERSION=`echo $GCC_VERSION | tr '-' ' ' |  awk '{print $1}'`
 
-pushd $TARGET_DIR/x86_64-apple-$TARGET/include &>/dev/null
+pushd $TARGET_DIR/$ARCH-apple-$TARGET/include &>/dev/null
 pushd c++/${GCC_VERSION}* &>/dev/null
 
 cat $PATCH_DIR/libstdcxx.patch | \
@@ -176,7 +177,7 @@ source tools/tools.sh
 
 pushd $TARGET_DIR/bin &>/dev/null
 
-if [ ! -f i386-apple-$TARGET-base-gcc ]; then
+if [ ! -f i386-apple-$TARGET-base-gcc ] && [ $ARCH = "x86_64" ]; then
   mv x86_64-apple-$TARGET-gcc \
     x86_64-apple-$TARGET-base-gcc
 

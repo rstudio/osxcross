@@ -1,0 +1,44 @@
+{
+  "name": "Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "postCreateCommand": "./.devcontainer/postCreate.sh",
+  "extensions": [
+    "earthly.earthfile-syntax-highlighting",
+    "timonwong.shellcheck",
+    "mkhl.shfmt"
+  ],
+  "portsAttributes": {
+    "8371": {
+      "label": "Earthly BuildKit",
+      "onAutoForward": "ignore"
+    },
+    "8373": {
+      "label": "Earthly BuildKit",
+      "onAutoForward": "ignore"
+    }
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb"
+  },
+  "settings": {
+    "search.exclude": {},
+    "[shellscript]": {
+      "editor.defaultFormatter": "mkhl.shfmt"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {},
+    "ghcr.io/devcontainers/features/common-utils:1": {},
+    "ghcr.io/guiyomh/features/vim:0": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/lukewiwa/features/shellcheck:0": {}
+  }
+}
