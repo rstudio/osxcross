@@ -27,7 +27,6 @@ if [ $(osxcross-cmp $OSX_VERSION_MIN '<=' 10.5) -eq 1 ]; then
   echo "You must build OSXCross with OSX_VERSION_MIN >= 10.6" 2>&1
   exit 1
 fi
-
 # GCC mirror
 # Official GNU "ftp" doesn't have GCC snapshots
 GCC_MIRROR="https://ftp.gnu.org/pub/gnu/gcc"
@@ -44,21 +43,14 @@ source $BASE_DIR/tools/trap_exit.sh
 
 if [ ! -f "have_gcc_${GCC_VERSION}_${TARGET}" ]; then
 
-pushd $TARBALL_DIR &>/dev/null
-if [[ $GCC_VERSION != *-* ]]; then
-  download "$GCC_MIRROR/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.xz"
-else
-  download "$GCC_MIRROR_WITH_SNAPSHOTS/snapshots/$GCC_VERSION/gcc-$GCC_VERSION.tar.xz"
-fi
-popd &>/dev/null
-
 echo "cleaning up ..."
-rm -rf gcc* 2>/dev/null
+# rm -rf gcc* 2>/dev/null
 
-extract "$TARBALL_DIR/gcc-$GCC_VERSION.tar.xz"
 echo ""
 
+mkdir -p gcc$GCC_VERSION
 pushd gcc*$GCC_VERSION* &>/dev/null
+if [ ! -f README.md ]; then git clone https://github.com/iains/gcc-darwin-arm64 .; fi
 
 rm -f $TARGET_DIR/bin/*-gcc*
 rm -f $TARGET_DIR/bin/*-g++*
@@ -119,8 +111,8 @@ fi
 EXTRACONFFLAGS=""
 
 if [ "$PLATFORM" != "Darwin" ]; then
-  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/$ARCH-apple-$TARGET-ld "
-  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/$ARCH-apple-$TARGET-as "
+  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/arm64-apple-darwin21.4-ld "
+  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/arm64-apple-darwin21.4-as "
 fi
 
 LANGS="c,c++,objc,obj-c++"
@@ -135,8 +127,10 @@ else
   EXTRACONFFLAGS+="--disable-multilib "
 fi
 
+# target triple: arm64-apple-darwin21.4
+
 ../configure \
-  --target=$ARCH-apple-$TARGET \
+  --target=arm64-apple-darwin21.4 \
   --with-sysroot=$SDK \
   --disable-nls \
   --enable-languages=$LANGS \
@@ -150,6 +144,8 @@ fi
 
 $MAKE -j$JOBS
 $MAKE install
+
+exit
 
 GCC_VERSION=`echo $GCC_VERSION | tr '-' ' ' |  awk '{print $1}'`
 
