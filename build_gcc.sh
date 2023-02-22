@@ -13,7 +13,7 @@ unset LIBRARY_PATH
 
 DESC=gcc
 USESYSTEMCOMPILER=1
-ARCH=arm64
+ARCH=aarch64
 source tools/tools.sh
 
 # GCC version to build
@@ -48,9 +48,11 @@ echo "cleaning up ..."
 
 echo ""
 
+rm -rf gcc
 mkdir -p gcc$GCC_VERSION
 pushd gcc*$GCC_VERSION* &>/dev/null
-if [ ! -f README.md ]; then git clone https://github.com/iains/gcc-darwin-arm64 .; fi
+pwd
+cp -r ../../../gcc-darwin-arm64/* .
 
 rm -f $TARGET_DIR/bin/*-gcc*
 rm -f $TARGET_DIR/bin/*-g++*
@@ -111,8 +113,8 @@ fi
 EXTRACONFFLAGS=""
 
 if [ "$PLATFORM" != "Darwin" ]; then
-  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/arm64-apple-darwin21.4-ld "
-  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/arm64-apple-darwin21.4-as "
+  EXTRACONFFLAGS+="--with-ld=$TARGET_DIR/bin/aarch64-apple-darwin22-ld "
+  EXTRACONFFLAGS+="--with-as=$TARGET_DIR/bin/aarch64-apple-darwin22-as "
 fi
 
 LANGS="c,c++,objc,obj-c++"
@@ -127,10 +129,10 @@ else
   EXTRACONFFLAGS+="--disable-multilib "
 fi
 
-# target triple: arm64-apple-darwin21.4
+# target triple: aarch64-apple-darwin22
 
 ../configure \
-  --target=arm64-apple-darwin21.4 \
+  --target=aarch64-apple-darwin22 \
   --with-sysroot=$SDK \
   --disable-nls \
   --enable-languages=$LANGS \
@@ -144,8 +146,6 @@ fi
 
 $MAKE -j$JOBS
 $MAKE install
-
-exit
 
 GCC_VERSION=`echo $GCC_VERSION | tr '-' ' ' |  awk '{print $1}'`
 

@@ -123,8 +123,8 @@ CCTOOLS_VERSION=973.0.1
 LINKER_VERSION=609
 
 get_sources \
-  https://github.com/tpoechtrager/cctools-port.git \
-  $CCTOOLS_VERSION-ld64-$LINKER_VERSION
+  https://github.com/rstudio/cctools-port \
+  master
 
 if [ $f_res -eq 1 ]; then
   pushd $CURRENT_BUILD_PROJECT_NAME/cctools &>/dev/null
