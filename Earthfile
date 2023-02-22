@@ -29,9 +29,22 @@ osxcross.build:
   ENV PATH=$PATH:/osxcross/bin
 
 # runs the build_gcc.sh script
-osxcross.gcc:
+osxcross.gcc.amd64:
   ARG --required sdk_version
   ARG gcc_version=12.2.0
+  FROM +osxcross.build --sdk_version=$sdk_version
+  RUN apt install -y gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
+  ENV GCC_VERSION=$gcc_version
+  ENV ENABLE_FORTRAN=1
+  ENV TARGET_DIR=/osxcross
+  CACHE /osxcross/build
+  RUN ./build_gcc.sh
+  SAVE ARTIFACT /osxcross
+  ENV PATH=$PATH:/osxcross/bin
+
+osxcross.gcc.arm64:
+  ARG --required sdk_version
+  ARG gcc_version=13.0.1
   FROM +osxcross.build --sdk_version=$sdk_version
   RUN apt install -y gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
   ENV GCC_VERSION=$gcc_version
